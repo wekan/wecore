@@ -2,7 +2,7 @@
 
 This does not work.
 
-Made with ASP.NET, .NET Core and SQLite. For having password login and Windows IWA login.
+Made with ASP.NET Core and SQLite. For having password login and Windows IWA login.
 
 ## Why it does not work
 
