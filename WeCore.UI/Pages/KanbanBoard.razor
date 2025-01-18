@@ -1,0 +1,97 @@
+@page "/kanban/{BoardId}"
+@using Microsoft.AspNetCore.Authorization
+@using WeCore.UI.Services
+@using WeCore.UI.Models
+@attribute [Authorize]
+@inject IKanbanService KanbanService
+
+<div class="kanban-board">
+    <div class="board-header">
+        <h2 @ondblclick="@(() => EditTitle())" @onclick:stopPropagation>
+            @if (isEditingTitle)
+            {
+                <input @bind="board.Title" @blur="SaveTitle" @onkeyup="HandleTitleKeyUp" />
+            }
+            else
+            {
+                @board.Title
+            }
+        </h2>
+    </div>
+
+    <div class="swimlanes">
+        @foreach (var swimlane in board.Swimlanes)
+        {
+            <div class="swimlane" draggable="true" @ondragstart="@(() => HandleDragStart("swimlane", swimlane.Id.ToString()))"
+                 @ondrop="@(() => HandleDrop("swimlane", swimlane.Id.ToString()))" @ondragover:preventDefault>
+                <div class="swimlane-header" @ondblclick="@(() => EditSwimlaneTitle(swimlane))">
+                    @swimlane.Title
+                </div>
+                
+                <div class="lists">
+                    @foreach (var list in swimlane.Lists)
+                    {
+                        <div class="list" draggable="true" @ondragstart="@(() => HandleDragStart("list", list.Id.ToString()))"
+                             @ondrop="@(() => HandleDrop("list", list.Id.ToString()))" @ondragover:preventDefault>
+                            <div class="list-header" @ondblclick="@(() => EditListTitle(list))">
+                                @list.Title
+                            </div>
+                            
+                            <div class="cards">
+                                @foreach (var card in list.Cards)
+                                {
+                                    <div class="card" draggable="true" @ondragstart="@(() => HandleDragStart("card", card.Id.ToString()))"
+                                         @ondrop="@(() => HandleDrop("card", card.Id.ToString()))" @ondragover:preventDefault
+                                         @ondblclick="@(() => EditCardTitle(card))">
+                                        @card.Title
+                                    </div>
+                                }
+                            </div>
+                        </div>
+                    }
+                </div>
+            </div>
+        }
+    </div>
+</div>
+
+@code {
+    [Parameter]
+    public string BoardId { get; set; } = "";
+    private Board board = new();
+    private bool isEditingTitle;
+    private string? dragType;
+    private string? dragId;
+
+    protected override async Task OnInitializedAsync()
+    {
+        board = await KanbanService.GetBoard(BoardId);
+    }
+
+    private void EditTitle() => isEditingTitle = true;
+    private void EditSwimlaneTitle(Swimlane swimlane) => Console.WriteLine($"Edit swimlane {swimlane.Id}");
+    private void EditListTitle(List list) => Console.WriteLine($"Edit list {list.Id}");
+    private void EditCardTitle(Card card) => Console.WriteLine($"Edit card {card.Id}");
+
+    private void HandleTitleKeyUp(KeyboardEventArgs e)
+    {
+        if (e.Key == "Enter")
+        {
+            isEditingTitle = false;
+            // Save title logic here
+        }
+    }
+
+    private void HandleDragStart(string type, string id)
+    {
+        dragType = type;
+        dragId = id;
+    }
+
+    private void HandleDrop(string targetType, string targetId)
+    {
+        // Handle drop logic here
+        dragType = null;
+        dragId = null;
+    }
+}

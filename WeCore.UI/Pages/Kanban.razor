@@ -1,0 +1,92 @@
+@page "/kanban"
+
+<div class="kanban-board">
+    <div class="kanban-column">
+        <h3>To Do</h3>
+        <div class="kanban-items" @ondrop="@(() => OnDrop("todo"))" @ondragover:preventDefault>
+            @foreach (var item in TodoItems)
+            {
+                <div class="kanban-item" draggable="true" @ondragstart="@(() => OnDragStart(item))">
+                    <h4>@item.Title</h4>
+                    <p>@item.Description</p>
+                </div>
+            }
+        </div>
+    </div>
+
+    <div class="kanban-column">
+        <h3>In Progress</h3>
+        <div class="kanban-items" @ondrop="@(() => OnDrop("in-progress"))" @ondragover:preventDefault>
+            @foreach (var item in InProgressItems)
+            {
+                <div class="kanban-item" draggable="true" @ondragstart="@(() => OnDragStart(item))">
+                    <h4>@item.Title</h4>
+                    <p>@item.Description</p>
+                </div>
+            }
+        </div>
+    </div>
+
+    <div class="kanban-column">
+        <h3>Done</h3>
+        <div class="kanban-items" @ondrop="@(() => OnDrop("done"))" @ondragover:preventDefault>
+            @foreach (var item in DoneItems)
+            {
+                <div class="kanban-item" draggable="true" @ondragstart="@(() => OnDragStart(item))">
+                    <h4>@item.Title</h4>
+                    <p>@item.Description</p>
+                </div>
+            }
+        </div>
+    </div>
+</div>
+
+@code {
+    private List<KanbanItem> TodoItems = new();
+    private List<KanbanItem> InProgressItems = new();
+    private List<KanbanItem> DoneItems = new();
+    private KanbanItem? draggedItem;
+
+    protected override void OnInitialized()
+    {
+        // Sample data
+        TodoItems.Add(new KanbanItem { Title = "Task 1", Description = "Description 1" });
+        InProgressItems.Add(new KanbanItem { Title = "Task 2", Description = "Description 2" });
+        DoneItems.Add(new KanbanItem { Title = "Task 3", Description = "Description 3" });
+    }
+
+    private void OnDragStart(KanbanItem item)
+    {
+        draggedItem = item;
+    }
+
+    private void OnDrop(string column)
+    {
+        if (draggedItem == null) return;
+
+        TodoItems.Remove(draggedItem);
+        InProgressItems.Remove(draggedItem);
+        DoneItems.Remove(draggedItem);
+
+        switch (column)
+        {
+            case "todo":
+                TodoItems.Add(draggedItem);
+                break;
+            case "in-progress":
+                InProgressItems.Add(draggedItem);
+                break;
+            case "done":
+                DoneItems.Add(draggedItem);
+                break;
+        }
+
+        draggedItem = null;
+    }
+
+    public class KanbanItem
+    {
+        public string Title { get; set; } = "";
+        public string Description { get; set; } = "";
+    }
+}

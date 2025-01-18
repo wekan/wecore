@@ -1,0 +1,46 @@
+services:
+  webapi:
+    container_name: wekan-api
+    build:
+      context: .
+      dockerfile: Dockerfile.api
+    ports:
+      - "8080:80"
+    environment:
+      - ASPNETCORE_ENVIRONMENT=Development
+      - ASPNETCORE_URLS=http://+:80
+      - ConnectionStrings__DefaultConnection=Data Source=/app/data/WeKanban.db
+    volumes:
+      - sqlite-data:/app/data
+    deploy:
+      resources:
+        limits:
+          memory: 512M
+    networks:
+      - wekan-network
+
+  webui:
+    container_name: wekan-ui
+    build:
+      context: .
+      dockerfile: Dockerfile.ui
+    ports:
+      - "80:80"
+    environment:
+      - ASPNETCORE_ENVIRONMENT=Development
+    depends_on:
+      - webapi
+    deploy:
+      resources:
+        limits:
+          memory: 256M
+    networks:
+      - wekan-network
+
+networks:
+  wekan-network:
+    driver: bridge
+
+volumes:
+  sqlite-data:
+    driver: local

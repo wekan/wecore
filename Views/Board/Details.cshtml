@@ -1,0 +1,57 @@
+@model WeCore.Models.Board
+
+@{
+    ViewData["Title"] = Model.Title;
+}
+
+<h2>@Model.Title</h2>
+<p>@Model.Description</p>
+
+<div class="kanban-board">
+    @foreach (var column in Model.Columns.OrderBy(c => c.Order))
+    {
+        <div class="kanban-column" data-column-id="@column.Id">
+            <h3>@column.Title</h3>
+            <div class="kanban-cards">
+                @foreach (var card in column.Cards.OrderBy(c => c.Order))
+                {
+                    <div class="kanban-card" data-card-id="@card.Id">
+                        <h4>@card.Title</h4>
+                        <p>@card.Description</p>
+                        <small>Created by @card.CreatedBy on @card.CreatedAt.ToShortDateString()</small>
+                    </div>
+                }
+            </div>
+        </div>
+    }
+</div>
+
+@section Styles {
+    <style>
+        .kanban-board {
+            display: flex;
+            gap: 1rem;
+            overflow-x: auto;
+            padding: 1rem;
+        }
+
+        .kanban-column {
+            min-width: 300px;
+            background: #f5f5f5;
+            padding: 1rem;
+            border-radius: 4px;
+        }
+
+        .kanban-cards {
+            min-height: 100px;
+        }
+
+        .kanban-card {
+            background: white;
+            padding: 1rem;
+            margin: 0.5rem 0;
+            border-radius: 4px;
+            box-shadow: 0 1px 3px rgba(0,0,0,0.12);
+        }
+    </style>
+}

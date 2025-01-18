@@ -1,0 +1,15 @@
+.welcome-container {
+    text-align: center;
+    padding: 2rem;
+    max-width: 800px;
+    margin: 0 auto;
+}
+
+.action-buttons {
+    margin-top: 2rem;
+}
+
+.action-buttons .btn {
+    margin: 0 0.5rem;
+    padding: 0.5rem 2rem;
+}

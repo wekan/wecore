@@ -1,0 +1,26 @@
+@model IEnumerable<WeCore.Models.Board>
+
+@{
+    ViewData["Title"] = "Kanban Boards";
+}
+
+<h1>My Boards</h1>
+
+<p>
+    <a asp-action="Create" class="btn btn-primary">Create New Board</a>
+</p>
+
+<div class="row">
+    @foreach (var board in Model)
+    {
+        <div class="col-md-4 mb-4">
+            <div class="card">
+                <div class="card-body">
+                    <h5 class="card-title">@board.Title</h5>
+                    <p class="card-text">@board.Description</p>
+                    <a asp-action="Details" asp-route-id="@board.Id" class="btn btn-info">View Board</a>
+                </div>
+            </div>
+        </div>
+    }
+</div>
