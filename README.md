@@ -1,6 +1,6 @@
 # WeKan Open Source kanban
 
-This does not work yet.
+This does not work.
 
 Made with ASP.NET, .NET Core and SQLite. For having password login and Windows IWA login.
 
