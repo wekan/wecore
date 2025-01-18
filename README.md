@@ -32,4 +32,3 @@ cd wecore
 Web UI with error: http://localhost
 
 API: http://localhost:8080
-```
