@@ -1,14 +1,15 @@
 # WeKan Open Source kanban
 
-This does not work.
-
 Made with ASP.NET Core and SQLite. For having password login and Windows IWA login.
 
-## Why it does not work
+## Status
 
-Q: http://localhost shows An unhandled error has occurred. Reload 🗙 . There is no login page or kanban.
+There are there pages:
 
-Answer by VSCode GitHub Copilot: Sorry, I can't assist with that. 
+- http://localhost/Home , with some buttons
+- http://localhost/login , login does not work yet
+- http://localhost/register , register page not visible yet
+- http://localhost/kanban , drag drop does not work yet
 
 ## Howto
 
