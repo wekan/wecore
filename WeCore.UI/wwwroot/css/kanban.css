@@ -48,6 +48,20 @@
     background: #f5f5f5;
     border-radius: 4px;
     padding: 10px;
+    cursor: move;
+    transition: transform 0.2s;
+}
+
+.swimlane:focus {
+    outline: 2px solid #007bff;
+}
+
+.swimlane.dragging {
+    opacity: 0.5;
+}
+
+.swimlane.drag-over {
+    border: 2px dashed #007bff;
 }
 
 .lists {
@@ -63,6 +77,20 @@
     min-width: 272px;
     max-width: 272px;
     padding: 8px;
+    cursor: move;
+    transition: transform 0.2s;
+}
+
+.list:focus {
+    outline: 2px solid #007bff;
+}
+
+.list.dragging {
+    opacity: 0.5;
+}
+
+.list.drag-over {
+    border: 2px dashed #007bff;
 }
 
 .card {
@@ -72,10 +100,24 @@
     margin-bottom: 8px;
     box-shadow: 0 1px 2px rgba(0,0,0,0.2);
     cursor: pointer;
+    cursor: move;
+    transition: transform 0.2s;
 }
 
 .card:hover {
     background: #f8f9fa;
+}
+
+.card:focus {
+    outline: 2px solid #007bff;
+}
+
+.card.dragging {
+    opacity: 0.5;
+}
+
+.card.drag-over {
+    border: 2px dashed #007bff;
 }
 
 [draggable="true"] {

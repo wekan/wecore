@@ -16,6 +16,22 @@ namespace WeCore.UI.Services
             _jsRuntime = jsRuntime;
         }
 
+        // Temporary implementation for testing
+        public async Task<bool> Login(LoginModel loginModel)
+        {
+            return await Task.FromResult(true);
+        }
+
+        public async Task<bool> Register(RegisterModel registerModel)
+        {
+            return await Task.FromResult(true);
+        }
+
+        public async Task Logout()
+        {
+            await Task.CompletedTask;
+        }
+
         public async Task<bool> LoginAsync(LoginModel loginModel)
         {
             try
@@ -33,11 +49,6 @@ namespace WeCore.UI.Services
             {
                 return false;
             }
-        }
-
-        public async Task<bool> Login(LoginModel loginModel)
-        {
-            return await LoginAsync(loginModel);
         }
 
         public async Task LogoutAsync()

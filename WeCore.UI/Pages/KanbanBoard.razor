@@ -2,8 +2,10 @@
 @using Microsoft.AspNetCore.Authorization
 @using WeCore.UI.Services
 @using WeCore.UI.Models
+@using Microsoft.JSInterop
 @attribute [Authorize]
 @inject IKanbanService KanbanService
+@inject IJSRuntime JS
 
 <div class="kanban-board">
     <div class="board-header">
@@ -19,29 +21,41 @@
         </h2>
     </div>
 
-    <div class="swimlanes">
-        @foreach (var swimlane in board.Swimlanes)
+    <div class="swimlanes" @onkeydown="HandleKeyDown">
+        @foreach (var swimlane in board.Swimlanes.OrderBy(s => s.Order))
         {
-            <div class="swimlane" draggable="true" @ondragstart="@(() => HandleDragStart("swimlane", swimlane.Id.ToString()))"
-                 @ondrop="@(() => HandleDrop("swimlane", swimlane.Id.ToString()))" @ondragover:preventDefault>
+            <div class="swimlane" draggable="true" 
+                 @ondragstart="@(() => HandleDragStart("swimlane", swimlane))"
+                 @ondragover="@(() => HandleDragOver("swimlane", swimlane))"
+                 @ondrop="@(() => HandleDrop("swimlane", swimlane))"
+                 @ondragover:preventDefault
+                 tabindex="0">
                 <div class="swimlane-header" @ondblclick="@(() => EditSwimlaneTitle(swimlane))">
                     @swimlane.Title
                 </div>
                 
                 <div class="lists">
-                    @foreach (var list in swimlane.Lists)
+                    @foreach (var list in swimlane.Lists.OrderBy(l => l.Order))
                     {
-                        <div class="list" draggable="true" @ondragstart="@(() => HandleDragStart("list", list.Id.ToString()))"
-                             @ondrop="@(() => HandleDrop("list", list.Id.ToString()))" @ondragover:preventDefault>
+                        <div class="list" draggable="true"
+                             @ondragstart="@(() => HandleDragStart("list", list))"
+                             @ondragover="@(() => HandleDragOver("list", list))"
+                             @ondrop="@(() => HandleDrop("list", list))"
+                             @ondragover:preventDefault
+                             tabindex="0">
                             <div class="list-header" @ondblclick="@(() => EditListTitle(list))">
                                 @list.Title
                             </div>
                             
                             <div class="cards">
-                                @foreach (var card in list.Cards)
+                                @foreach (var card in list.Cards.OrderBy(c => c.Order))
                                 {
-                                    <div class="card" draggable="true" @ondragstart="@(() => HandleDragStart("card", card.Id.ToString()))"
-                                         @ondrop="@(() => HandleDrop("card", card.Id.ToString()))" @ondragover:preventDefault
+                                    <div class="card" draggable="true"
+                                         @ondragstart="@(() => HandleDragStart("card", card))"
+                                         @ondragover="@(() => HandleDragOver("card", card))"
+                                         @ondrop="@(() => HandleDrop("card", card))"
+                                         @ondragover:preventDefault
+                                         tabindex="0"
                                          @ondblclick="@(() => EditCardTitle(card))">
                                         @card.Title
                                     </div>
@@ -62,6 +76,8 @@
     private bool isEditingTitle;
     private string? dragType;
     private string? dragId;
+    private object? draggedItem;
+    private string? draggedType;
 
     protected override async Task OnInitializedAsync()
     {
@@ -82,16 +98,96 @@
         }
     }
 
-    private void HandleDragStart(string type, string id)
+    private void HandleDragStart(string type, object item)
     {
-        dragType = type;
-        dragId = id;
+        draggedItem = item;
+        draggedType = type;
     }
 
-    private void HandleDrop(string targetType, string targetId)
+    private void HandleDragOver(string type, object target)
     {
-        // Handle drop logic here
-        dragType = null;
-        dragId = null;
+        if (draggedType != type) return;
+    }
+
+    private async Task HandleDrop(string type, object target)
+    {
+        if (draggedType != type || draggedItem == target) return;
+
+        switch (type)
+        {
+            case "swimlane":
+                await ReorderSwimlanes((Swimlane)draggedItem, (Swimlane)target);
+                break;
+            case "list":
+                await ReorderLists((List)draggedItem, (List)target);
+                break;
+            case "card":
+                await ReorderCards((Card)draggedItem, (Card)target);
+                break;
+        }
+
+        draggedItem = null;
+        draggedType = "";
+        StateHasChanged();
+    }
+
+    private async Task HandleKeyDown(KeyboardEventArgs e)
+    {
+        var element = await JS.InvokeAsync<IJSObjectReference>("document.activeElement");
+        if (element == null) return;
+        
+        var type = await element.InvokeAsync<string>("getAttribute", "data-type");
+        
+        if (e.Key == "ArrowUp" || e.Key == "ArrowDown")
+        {
+            await HandleItemMove(type, e.Key == "ArrowUp" ? -1 : 1);
+        }
+    }
+
+    private async Task HandleItemMove(string? type, int direction)
+    {
+        if (string.IsNullOrEmpty(type)) return;
+
+        switch (type)
+        {
+            case "swimlane":
+                // Handle swimlane reordering
+                break;
+            case "list":
+                // Handle list reordering
+                break;
+            case "card":
+                // Handle card reordering
+                break;
+        }
+        
+        await Task.CompletedTask;
+    }
+
+    private async Task ReorderSwimlanes(Swimlane source, Swimlane target)
+    {
+        var sourceOrder = source.Order;
+        source.Order = target.Order;
+        target.Order = sourceOrder;
+        await KanbanService.UpdateSwimlaneOrder(source.Id, source.Order);
+        await KanbanService.UpdateSwimlaneOrder(target.Id, target.Order);
+    }
+
+    private async Task ReorderLists(List source, List target)
+    {
+        var sourceOrder = source.Order;
+        source.Order = target.Order;
+        target.Order = sourceOrder;
+        await KanbanService.UpdateListOrder(source.Id, source.Order);
+        await KanbanService.UpdateListOrder(target.Id, target.Order);
+    }
+
+    private async Task ReorderCards(Card source, Card target)
+    {
+        var sourceOrder = source.Order;
+        source.Order = target.Order;
+        target.Order = sourceOrder;
+        await KanbanService.UpdateCardOrder(source.Id, source.Order);
+        await KanbanService.UpdateCardOrder(target.Id, target.Order);
     }
 }
