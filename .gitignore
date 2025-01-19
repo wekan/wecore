@@ -39,3 +39,4 @@ msbuild.wrn
 
 # Environment variables
 .env
+WeCore.UI/Properties/launchSettings.json
