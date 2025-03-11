@@ -44,5 +44,20 @@ namespace WeCore.UI.Services
             else
                 await _httpClient.PutAsJsonAsync($"api/boards/{board.Id}", board);
         }
+
+        public async Task UpdateSwimlaneOrder(int swimlaneId, int order)
+        {
+            await _httpClient.PutAsJsonAsync($"api/swimlanes/{swimlaneId}/order", order);
+        }
+
+        public async Task UpdateListOrder(int listId, int order)
+        {
+            await _httpClient.PutAsJsonAsync($"api/lists/{listId}/order", order);
+        }
+
+        public async Task UpdateCardOrder(int cardId, int order)
+        {
+            await _httpClient.PutAsJsonAsync($"api/cards/{cardId}/order", order);
+        }
     }
 }
