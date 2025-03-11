@@ -1,12 +1,13 @@
 @page "/kanban"
 
 <div class="kanban-board">
-    <div class="kanban-column">
+    <div class="kanban-column" draggable="true" ondragover="event.preventDefault();" @ondrop=@(() => OnDrop("todo"))>
         <h3>To Do</h3>
-        <div class="kanban-items" @ondrop="@(() => OnDrop("todo"))" @ondragover:preventDefault>
+        <div class="kanban-items">
             @foreach (var item in TodoItems)
             {
                 <div class="kanban-item" draggable="true" @ondragstart="@(() => OnDragStart(item))">
+                     
                     <h4>@item.Title</h4>
                     <p>@item.Description</p>
                 </div>
@@ -14,9 +15,9 @@
         </div>
     </div>
 
-    <div class="kanban-column">
+    <div class="kanban-column" draggable="true" ondragover="event.preventDefault();" @ondrop=@(() => OnDrop("in-progress"))>
         <h3>In Progress</h3>
-        <div class="kanban-items" @ondrop="@(() => OnDrop("in-progress"))" @ondragover:preventDefault>
+        <div class="kanban-items">
             @foreach (var item in InProgressItems)
             {
                 <div class="kanban-item" draggable="true" @ondragstart="@(() => OnDragStart(item))">
@@ -27,9 +28,9 @@
         </div>
     </div>
 
-    <div class="kanban-column">
+    <div class="kanban-column" draggable="true" ondragover="event.preventDefault();" @ondrop=@(() => OnDrop("done"))>
         <h3>Done</h3>
-        <div class="kanban-items" @ondrop="@(() => OnDrop("done"))" @ondragover:preventDefault>
+        <div class="kanban-items">
             @foreach (var item in DoneItems)
             {
                 <div class="kanban-item" draggable="true" @ondragstart="@(() => OnDragStart(item))">
